@@ -1,0 +1,5 @@
+target/
+allure-result/
+.allure
+.idea
+build/
