@@ -1,6 +1,0 @@
-Element not found {#search-query}
-Expected: editable
-Screenshot: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1791553270833.3.png
-Page source: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1791553270833.3.html
-Timeout: 10s
-Caused by: NoSuchElementException: no such element: Unable to locate element: {"method":"css selector","selector":"#search-query"}

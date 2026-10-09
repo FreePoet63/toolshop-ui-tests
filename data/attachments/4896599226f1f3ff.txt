@@ -1,0 +1,8 @@
+Browser logs not available: HTTP method not allowed
+Command duration or timeout: 1 milliseconds
+Build info: version: '4.47.0', revision: '9175ed9 9175ed94d83e87cc3abeb7c9fd91367d17849d35'
+System info: os.name: 'Linux', os.arch: 'amd64', os.version: '6.17.0-1022-azure', java.version: '17.0.20.1'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [1e13624c-f873-42f5-8f64-3d722ec5560f, getLog {type=browser}]
+Capabilities {acceptInsecureCerts: true, browserName: firefox, browserVersion: 157.0, moz:accessibilityChecks: false, moz:buildID: 20260924084938, moz:geckodriverVersion: 0.37.1, moz:headless: true, moz:platformVersion: 6.17.0-1022-azure, moz:processID: 6188, moz:profile: /tmp/rust_mozprofileFAFU6a, moz:shutdownTimeout: 60000, moz:webdriverClick: true, moz:windowless: false, pageLoadStrategy: eager, platformName: linux, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: ignore, userAgent: Mozilla/5.0 (X11; Linux x86..., webSocketUrl: ws://127.0.0.1:42577/sessio...}
+Session ID: 1e13624c-f873-42f5-8f64-3d722ec5560f

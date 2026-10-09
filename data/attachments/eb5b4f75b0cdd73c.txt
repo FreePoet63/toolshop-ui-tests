@@ -1,6 +1,0 @@
-Element not found {By.xpath: //button[@data-test="nav-categories"]}
-Expected: clickable: interactable and enabled
-Screenshot: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1791553313817.7.png
-Page source: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1791553313817.7.html
-Timeout: 10s
-Caused by: NoSuchElementException: no such element: Unable to locate element: {"method":"xpath","selector":"//button[@data-test="nav-categories"]"}
