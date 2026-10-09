@@ -1,0 +1,2 @@
+[2026-10-09T13:40:50.033Z] [SEVERE] https://practicesoftwaretesting.com/ - Failed to load resource: the server responded with a status of 403 ()
+[2026-10-09T13:40:50.283Z] [WARNING] https://practicesoftwaretesting.com/ - No available adapters.
