@@ -1,4 +1,5 @@
 name: UI tests Toolshop UI Java CI with Maven
+
 on:
   push:
   workflow_dispatch:
@@ -21,10 +22,15 @@ jobs:
           java-version: '17'
           cache: maven
 
+      - name: Set up Firefox
+        uses: browser-actions/setup-firefox@v1
+
       - name: Run tests
-        id: tests
-        run: mvn clean test -Dheadless=true -Dsurefire.rerunFailingTestsCount=2
-        continue-on-error: true
+        run: >
+          mvn clean test
+          -Dheadless=true
+          -Dbrowser=firefox
+          -Dsurefire.rerunFailingTestsCount=2
 
       - name: Load previous Allure report history
         uses: actions/checkout@v4
@@ -48,7 +54,7 @@ jobs:
 
       - name: Install Allure CLI
         if: always()
-        run: npm install -g allure-commandline --save-dev
+        run: npm install -g allure-commandline
 
       - name: Generate Allure report
         if: always()
@@ -61,7 +67,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-report
-
-      - name: Fail job if tests failed
-        if: always() && steps.tests.outcome == 'failure'
-        run: exit 1
