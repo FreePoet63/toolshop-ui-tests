@@ -6,6 +6,8 @@ import components.Header;
 import components.QuantityControl;
 import io.qameta.allure.Step;
 
+import java.time.Duration;
+
 import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -35,7 +37,7 @@ public class ProductPage {
 
     @Step("Получаем название товара")
     public String name() {
-        return productName.shouldBe(visible).getText();
+        return productName.shouldBe(visible, Duration.ofSeconds(3)).getText();
     }
 
     @Step("Получаем цену товара")
