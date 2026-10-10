@@ -37,7 +37,7 @@ public class ProductPage {
 
     @Step("Получаем название товара")
     public String name() {
-        return productName.shouldBe(visible, Duration.ofSeconds(3)).getText();
+        return productName.shouldBe(visible, Duration.ofSeconds(5)).getText();
     }
 
     @Step("Получаем цену товара")
