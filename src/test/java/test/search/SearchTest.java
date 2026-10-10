@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Epic("practicesoftwaretesting.com")
 @Feature("Search")
+@Link(name = "Toolshop", url = "https://practicesoftwaretesting.com/")
 public class SearchTest extends BaseTest {
 
     @Test

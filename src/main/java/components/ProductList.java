@@ -6,10 +6,10 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import pages.ProductPage;
 
+import java.time.Duration;
 import java.util.List;
 
-import static com.codeborne.selenide.Condition.partialText;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.$x;
 
@@ -29,6 +29,11 @@ public class ProductList {
         return titles.texts();
     }
 
+    @Step("Получаем название первого товара")
+    public String firstTitle() {
+        return titles.first().shouldBe(visible).getText();
+    }
+
     @Step("Проверяем, что есть товар с текстом «{text}»")
     public ProductList shouldHaveProductWithText(String text) {
         products.findBy(partialText(text)).shouldBe(visible);
@@ -43,7 +48,7 @@ public class ProductList {
 
     @Step("Ждём, пока товаров станет {expected}")
     public ProductList shouldHaveCount(int expected) {
-        products.shouldHave(CollectionCondition.size(expected));
+        products.shouldHave(CollectionCondition.size(expected), Duration.ofSeconds(3));
         return this;
     }
 
@@ -56,12 +61,18 @@ public class ProductList {
 
     @Step("Читаем сообщение об отсутствии товаров")
     public String getErrorMessageText() {
-        return errorMessage.shouldBe(visible).getText();
+        return errorMessage.shouldBe(visible, Duration.ofSeconds(3)).getText();
     }
 
     @Step("Открываем карточку выбранного товара")
     public ProductPage openProduct() {
         products.first().hover().click();
+        return new ProductPage();
+    }
+
+    @Step("Открываем карточку товара «{title}»")
+    public ProductPage openProduct(String title) {
+        products.findBy(text(title)).shouldBe(visible).click();
         return new ProductPage();
     }
 }
