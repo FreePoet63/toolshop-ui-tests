@@ -37,7 +37,7 @@ public class SearchTest extends BaseTest {
     @Description("Поиск по несуществующему запросу возвращает пустой результат и сообщение " +
             "0 products found for 'qwerty123'")
     public void shouldReturnNoResultsForUnknownProduct() {
-        var result = homePage.search("asdkjaslkdjqwe123456");
+        var result = homePage.search("qwerty123");
 
         assertThat(result.products().getErrorMessageText()).
                 isEqualTo("0 products found for 'qwerty123'");
