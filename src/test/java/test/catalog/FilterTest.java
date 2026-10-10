@@ -9,9 +9,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Epic("practicesoftwaretesting.com")
 @Feature("Catalog / Filter")
+@Link(name = "Toolshop", url = "https://practicesoftwaretesting.com/")
 public class FilterTest extends BaseTest {
 
-    @Test
+    @Test()
     @Story("Применение одного фильтра")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Выбор одного значения фильтра сужает список товаров в категории")
@@ -92,9 +93,9 @@ public class FilterTest extends BaseTest {
     }
 
     @Test(dataProvider = "categoriesAndFilters")
-    @Story("Параметризованный поиск разных товаров")
+    @Story("Фильтрация в разных категориях")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Фильтрация работает корректно в разных категориях")
+    @Description("Фильтр в разных категориях оставляет в выдаче товары")
     public void shouldFilterAcrossDifferentCategories(String category, String filterValue) {
         var catalog = homePage.openCategory(category);
         int totalBefore = catalog.products().count();

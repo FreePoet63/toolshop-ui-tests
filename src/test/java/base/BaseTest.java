@@ -41,7 +41,7 @@ public abstract class BaseTest {
                 new AllureSelenide().screenshots(true).savePageSource(true).includeSelenideSteps(false));
     }
 
-    @Step("Открываем главную страницу OZ.by")
+    @Step("Открываем главную страницу practicesoftwaretesting.com")
     private HomePage openHomePage() {
         return open("/", HomePage.class);
     }

@@ -8,8 +8,7 @@ import pages.ProductPage;
 
 import java.util.List;
 
-import static com.codeborne.selenide.Condition.partialText;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.$x;
 
@@ -27,6 +26,11 @@ public class ProductList {
     @Step("Получаем название всех товаров")
     public List<String> titles() {
         return titles.texts();
+    }
+
+    @Step("Получаем название первого товара")
+    public String firstTitle() {
+        return titles.first().shouldBe(visible).getText();
     }
 
     @Step("Проверяем, что есть товар с текстом «{text}»")
@@ -62,6 +66,12 @@ public class ProductList {
     @Step("Открываем карточку выбранного товара")
     public ProductPage openProduct() {
         products.first().hover().click();
+        return new ProductPage();
+    }
+
+    @Step("Открываем карточку товара «{title}»")
+    public ProductPage openProduct(String title) {
+        products.findBy(text(title)).shouldBe(visible).click();
         return new ProductPage();
     }
 }

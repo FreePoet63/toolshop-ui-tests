@@ -1,18 +1,16 @@
 package pages;
 
-import components.CategoryList;
-import components.SearchBar;
+import components.Header;
 
 public class HomePage {
-    private final SearchBar searchBar = new SearchBar();
-    private final CategoryList categoryList = new CategoryList();
+    private final Header header = new Header();
 
     public SearchResultPage search(String query) {
-        return searchBar.search(query);
+        return header.search(query);
     }
 
     public CatalogPage openCategory(String categoryName) {
-        categoryList.openCategory(categoryName);
+        header.openCategory(categoryName);
         return new CatalogPage();
     }
 }
