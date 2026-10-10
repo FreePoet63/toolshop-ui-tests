@@ -6,6 +6,7 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import pages.ProductPage;
 
+import java.time.Duration;
 import java.util.List;
 
 import static com.codeborne.selenide.Condition.*;
@@ -47,7 +48,7 @@ public class ProductList {
 
     @Step("Ждём, пока товаров станет {expected}")
     public ProductList shouldHaveCount(int expected) {
-        products.shouldHave(CollectionCondition.size(expected));
+        products.shouldHave(CollectionCondition.size(expected), Duration.ofSeconds(3));
         return this;
     }
 
@@ -60,7 +61,7 @@ public class ProductList {
 
     @Step("Читаем сообщение об отсутствии товаров")
     public String getErrorMessageText() {
-        return errorMessage.shouldBe(visible).getText();
+        return errorMessage.shouldBe(visible, Duration.ofSeconds(3)).getText();
     }
 
     @Step("Открываем карточку выбранного товара")
