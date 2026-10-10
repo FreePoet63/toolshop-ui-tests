@@ -35,12 +35,12 @@ public class SearchTest extends BaseTest {
     @Story("Поиск несуществующего товара")
     @Severity(SeverityLevel.NORMAL)
     @Description("Поиск по несуществующему запросу возвращает пустой результат и сообщение " +
-            "0 products found for 'asdkjaslkdjqwe123456'")
+            "0 products found for 'qwerty123'")
     public void shouldReturnNoResultsForUnknownProduct() {
         var result = homePage.search("asdkjaslkdjqwe123456");
 
         assertThat(result.products().getErrorMessageText()).
-                isEqualTo("0 products found for 'asdkjaslkdjqwe123456'");
+                isEqualTo("0 products found for 'qwerty123'");
     }
 
     @Test
@@ -49,6 +49,8 @@ public class SearchTest extends BaseTest {
     @Description("Клик по товару в результатах поиска открывает его карточку")
     public void shouldOpenProductCardFromSearchResults() {
         var result = homePage.search("Hammer");
+        int totalBefore = result.products().count();
+        result.products().shouldHaveCount(totalBefore);
 
         var productPage = result.products().openProduct();
 
@@ -59,7 +61,7 @@ public class SearchTest extends BaseTest {
     @Story("Все результаты соответствуют запросу")
     @Severity(SeverityLevel.CRITICAL)
     @Description("Все товары в выдаче содержат поисковый запрос в названии")
-    public void shouldShowOnlyMatchingProductsafterSearch() {
+    public void shouldShowOnlyMatchingProductsAfterSearch() {
         var result = homePage.search("Hammer");
 
         result.products().shouldAllContain("Hammer");

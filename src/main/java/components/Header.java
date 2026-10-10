@@ -27,7 +27,7 @@ public class Header {
     @Step("Открываем категорию «{categoryName}»")
     public SearchResultPage openCategory(String categoryName) {
         categoryBtn.click();
-        categoryMenu.findBy(text(categoryName)).shouldBe(visible, Duration.ofSeconds(5)).click();
+        categoryMenu.findBy(text(categoryName)).shouldBe(visible).click();
         return new SearchResultPage();
     }
 

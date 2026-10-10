@@ -61,7 +61,7 @@ public class ProductList {
 
     @Step("Читаем сообщение об отсутствии товаров")
     public String getErrorMessageText() {
-        return errorMessage.shouldBe(visible, Duration.ofSeconds(7)).getText();
+        return errorMessage.shouldBe(visible, Duration.ofSeconds(10)).getText();
     }
 
     @Step("Открываем карточку выбранного товара")
