@@ -1,11 +1,19 @@
-name: UI tests Toolshop UI Java CI with Maven
+name: Toolshop UI tests
 
 on:
   push:
-  workflow_dispatch:
+    branches:
+      - master            # после слияния: обновляем отчёт Allure на Pages
+  pull_request:         # внутри PR: проверка кода до слияния
+  workflow_dispatch:    # ручной запуск кнопкой
 
 permissions:
   contents: write
+
+# Запуски одной ветки идут по очереди, чтобы не писать в gh-pages одновременно
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   test:
@@ -25,13 +33,14 @@ jobs:
       - name: Set up Firefox
         uses: browser-actions/setup-firefox@v1
 
+      # Повторы упавших тестов делает Retry (TestNG), параметр surefire не нужен.
+      # Шаг без continue-on-error: если тесты упали, весь запуск красный,
+      # а шаги ниже с if: always() всё равно выполнятся и соберут отчёт.
       - name: Run tests
         run: >
           mvn clean test
           -Dheadless=true
           -Dbrowser=firefox
-          -Dsurefire.rerunFailingTestsCount=2
-
       - name: Load previous Allure report history
         uses: actions/checkout@v4
         if: always()
@@ -45,7 +54,6 @@ jobs:
         run: |
           mkdir -p target/allure-results/history
           cp -r gh-pages/history/* target/allure-results/history/ 2>/dev/null || true
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         if: always()
@@ -60,8 +68,9 @@ jobs:
         if: always()
         run: allure generate target/allure-results --clean -o allure-report
 
+      # Публикуем отчёт только из main, чтобы черновая ветка не перезаписала рабочий отчёт
       - name: Deploy to GitHub Pages
-        if: always()
+        if: always() && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
