@@ -1,0 +1,3 @@
+
+expected: "0 products found for 'asdkjaslkdjqwe123456'"
+ but was: "45 products found for 'asdkjaslkdjqwe123456'"
