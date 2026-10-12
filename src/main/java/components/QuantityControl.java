@@ -12,19 +12,27 @@ public class QuantityControl {
     private final SelenideElement increaseButton = $("#btn-increase-quantity");
     private final SelenideElement decreaseButton = $("#btn-decrease-quantity");
 
-    @Step("Увеличиваем количество")
+    @Step("Increase quantity")
     public QuantityControl increase() {
         increaseButton.shouldBe(visible).click();
         return this;
     }
 
-    @Step("Уменьшаем количество")
+    @Step("Increase the quantity {times}")
+    public QuantityControl increase(int time) {
+        for (int i = 0; i < time; i++) {
+            increaseButton.shouldBe(visible).click();
+        }
+        return this;
+    }
+
+    @Step("Decrease quantity")
     public QuantityControl decrease() {
         decreaseButton.shouldBe(visible).click();
         return this;
     }
 
-    @Step("Проверяем, что количество равно {expected}")
+    @Step("Verify the quantity is {expected}")
     public QuantityControl shouldHaveValue(String expected) {
         input.shouldHave(value(expected));
         return this;

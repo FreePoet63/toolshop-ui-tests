@@ -12,9 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SearchTest extends BaseTest {
 
     @Test
-    @Story("Поиск существующего товара")
+    @Story("Search for an existing product")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Поиск по полному названию товара возвращает товар с этим названием")
+    @Description("Searching by a full product name returns that product")
     public void shouldFindExistingProduct() {
         var result = homePage.search("Hammer");
 
@@ -22,9 +22,9 @@ public class SearchTest extends BaseTest {
     }
 
     @Test
-    @Story("Поиск по части названия")
+    @Story("Search by part of a name")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Поиск по части названия тоже находит релевантные результаты")
+    @Description("Searching by part of a product name also returns relevant results")
     public void shouldFindProductByPartialName() {
         var result = homePage.search("Hamm");
 
@@ -32,35 +32,35 @@ public class SearchTest extends BaseTest {
     }
 
     @Test
-    @Story("Поиск несуществующего товара")
+    @Story("Search for a non-existent product")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Поиск по несуществующему запросу возвращает пустой результат и сообщение " +
-            "0 products found for 'qwerty123'")
+    @Description("Searching for a non-existent product shows no results and the message " +
+            "\"0 products found for 'asdkjaslkdjqwe123456'\"")
     public void shouldReturnNoResultsForUnknownProduct() {
-        var result = homePage.search("qwerty123");
+        var result = homePage.search("asdkjaslkdjqwe123456");
 
-        assertThat(result.products().getErrorMessageText()).
-                isEqualTo("0 products found for 'qwerty123'");
+        result.products()
+                .shouldHaveCount(0)
+                .shouldShoeMessage("0 products found for 'asdkjaslkdjqwe123456'");
     }
 
     @Test
-    @Story("Переход из выдачи в карточку товара")
+    @Story("Open a product from search results")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Клик по товару в результатах поиска открывает его карточку")
+    @Description("Clicking a product in the search results opens its page")
     public void shouldOpenProductCardFromSearchResults() {
         var result = homePage.search("Hammer");
-        int totalBefore = result.products().count();
-        result.products().shouldHaveCount(totalBefore);
 
-        var productPage = result.products().openProduct();
+        var productPage = result.products().openProduct("Hammer");
 
-        assertThat(productPage.name()).contains("Hammer");
+        Allure.step("Verify the expected product page is opened",
+                () -> assertThat(productPage.name()).contains("Hammer"));
     }
 
     @Test
-    @Story("Все результаты соответствуют запросу")
+    @Story("All results match the query")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Все товары в выдаче содержат поисковый запрос в названии")
+    @Description("Every product title in the result contains the search query")
     public void shouldShowOnlyMatchingProductsAfterSearch() {
         var result = homePage.search("Hammer");
 
