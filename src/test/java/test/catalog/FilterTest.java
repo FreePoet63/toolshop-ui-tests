@@ -13,9 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FilterTest extends BaseTest {
 
     @Test()
-    @Story("Применение одного фильтра")
+    @Story("Apply a single filter")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Выбор одного значения фильтра сужает список товаров в категории")
+    @Description("Selecting one filter value narrows the product list in the category")
     public void shouldApplySingleFilter() {
         var catalog = homePage.openCategory("Hand Tools");
         int totalBefore = catalog.products().count();
@@ -24,17 +24,17 @@ public class FilterTest extends BaseTest {
         catalog.products().shouldHaveFewerThan(totalBefore);
         int totalAfter = catalog.products().count();
 
-        Allure.step("Проверяем, что после фильтра товаров меньше, чем было (" + totalAfter  +
+        Allure.step("Verify fewer products are show after the filter (" + totalAfter  +
                         " < " + totalBefore + ")",
                 () -> assertThat(totalAfter).isLessThan(totalBefore));
-        Allure.step("Проверяем, что после фильтра товары остались (" + totalAfter  + ")",
+        Allure.step("Verify products remain after the filter (" + totalAfter  + ")",
                 () -> assertThat(totalAfter).isPositive());
     }
 
     @Test
-    @Story("Применение нескольких фильтров")
+    @Story("Apply multiple filters")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Комбинация нескольких фильтров ещё сильнее сужает выдачу")
+    @Description("Combining several filters narrows the results even further")
     public void shouldApplyMultipleFilters() {
         var catalog = homePage.openCategory("Hand Tools");
         int totalBefore = catalog.products().count();
@@ -47,15 +47,15 @@ public class FilterTest extends BaseTest {
         catalog.products().shouldHaveFewerThan(afterOneFilter);
         int afterTwoFilter = catalog.products().count();
 
-        Allure.step("Проверяем, что с двумя фильтрами товаров меньше, чем с одним (" + afterTwoFilter +
+        Allure.step("Verify two filters give fewer products than one (" + afterTwoFilter +
                         " < " + afterOneFilter + ")",
                 () -> assertThat(afterTwoFilter).isLessThan(afterOneFilter));
     }
 
     @Test
-    @Story("Сброс фильтра")
+    @Story("Reset a filter")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Cнятие фильтра возвращает полный список товаров категории")
+    @Description("Unchecking the filter restores the full product list of the category")
     public void shouldResetFilters() {
         var catalog = homePage.openCategory("Hand Tools");
         int totalBefore = catalog.products().count();
@@ -66,15 +66,15 @@ public class FilterTest extends BaseTest {
         catalog.products().shouldHaveCount(totalBefore);
         int afterReset = catalog.products().count();
 
-        Allure.step("Проверяем, что после снятия фильтра товаров столько же, сколько было (" + afterReset +
+        Allure.step("Verify the product count is restored after unchecking the filter (" + afterReset +
                         " = " + totalBefore + ")",
                 () -> assertThat(afterReset).isEqualTo(totalBefore));
     }
 
     @Test
-    @Story("Проверка результата после фильтрации")
+    @Story("Results match the filter")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("После применения фильтра название каждого товара в выдаче ему соответствует")
+    @Description("After a filter is applied, every product title in the results matches it")
     public void shouldShowOnlyMatchingProductsAfterFilter() {
         var catalog = homePage.openCategory("Hand Tools");
 
@@ -93,9 +93,9 @@ public class FilterTest extends BaseTest {
     }
 
     @Test(dataProvider = "categoriesAndFilters")
-    @Story("Фильтрация в разных категориях")
+    @Story("Filtering across categories")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Фильтр в разных категориях оставляет в выдаче товары")
+    @Description("A filter leaves matching products in different categories")
     public void shouldFilterAcrossDifferentCategories(String category, String filterValue) {
         var catalog = homePage.openCategory(category);
         int totalBefore = catalog.products().count();
@@ -104,7 +104,7 @@ public class FilterTest extends BaseTest {
         catalog.products().shouldHaveFewerThan(totalBefore);
         int totalAfter = catalog.products().count();
 
-        Allure.step("Проверяем, что после фильтра товары остались (" + totalAfter + ")",
+        Allure.step("Verify products remain after the filter (" + totalAfter + ")",
                 () -> assertThat(totalAfter).isPositive());
     }
 }

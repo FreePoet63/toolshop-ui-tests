@@ -11,38 +11,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Link(name = "Toolshop", url = "https://practicesoftwaretesting.com/")
 public class ProductTest extends BaseTest {
     @Test
-    @Story("Открытие карточки товара")
+    @Story("Open a product page")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("Карточка открывается из каталога, название совпадает с названием в списке")
+    @Description("The product page opens from the catalog and its name matches the catalog title")
     public void shouldOpenProductFromCatalog() {
         var catalog = homePage.openCategory("Hand Tools");
         String title = catalog.products().firstTitle();
 
         var productPage = catalog.products().openProduct(title);
-        Allure.step("Проверяем, что название в карточке совпадает с названием в каталоге «" + title + "»)",
+        Allure.step("Verify the productname matches the catalog title ('" + title + "')",
                 () -> assertThat(productPage.name()).isEqualTo(title));
     }
 
     @Test
-    @Story("Содержимое карточки товара")
+    @Story("Product page content")
     @Severity(SeverityLevel.NORMAL)
-    @Description("В карточке товара отображаются цена и описание")
+    @Description("The product page shows a price and a description")
     public void shouldShowPriceAndDescription() {
         var catalog = homePage.openCategory("Hand Tools");
         var productPage = catalog.products().openProduct(catalog.products().firstTitle());
 
         String price = productPage.price();
         String description = productPage.description();
-        Allure.step("Проверяем, что в цене есть число (" + price + ")",
+        Allure.step("Verify the price contains a number (" + price + ")",
                 () -> assertThat(price).containsPattern("\\d"));
-        Allure.step("Проверяем, что описание не пустое",
+        Allure.step("Verify the description is not empty",
                 () -> assertThat(description).isNotBlank());
     }
 
     @Test
-    @Story("Изменение количества")
+    @Story("Change quantity")
     @Severity(SeverityLevel.NORMAL)
-    @Description("Кнопки + и - меняют количество товара в карточке")
+    @Description("The + and - buttons change the product quantity")
     public void shouldChangeQuantity() {
         var catalog = homePage.openCategory("Hand Tools");
         var productPage = catalog.products().openProduct(catalog.products().firstTitle());
@@ -57,9 +57,9 @@ public class ProductTest extends BaseTest {
     }
 
     @Test
-    @Story("Добавление в корзину")
+    @Story("Add to cart")
     @Severity(SeverityLevel.CRITICAL)
-    @Description("После добавления товара появляется уведомление, а в значке корзины число 1")
+    @Description("After adding a products a notification appears and the cart badge shows 1")
     public void shouldAddProductToCart() {
         var catalog = homePage.openCategory("Hand Tools");
         var productPage = catalog.products().openProduct(catalog.products().firstTitle());

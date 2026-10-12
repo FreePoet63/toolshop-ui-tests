@@ -34,19 +34,19 @@ public abstract class BaseTest {
         closeBrowser();
     }
 
-    @Step("Настраиваем драйвер и Allure-листенер")
+    @Step("Set up the driver and the Allure listener")
     private void initDriver() {
         DriverConfig.setUp();
         SelenideLogger.addListener("AllureSelenide",
                 new AllureSelenide().screenshots(true).savePageSource(true).includeSelenideSteps(false));
     }
 
-    @Step("Открываем главную страницу practicesoftwaretesting.com")
+    @Step("Open the Toolshop home page")
     private HomePage openHomePage() {
         return open("/", HomePage.class);
     }
 
-    @Step("Закрываем браузер")
+    @Step("Close the browser")
     private void closeBrowser() {
         closeWebDriver();
     }

@@ -12,7 +12,7 @@ public class CatalogPage {
         return filterPanel;
     }
 
-    @Step("Получаем список продуктов")
+    @Step("Get the product list")
     public ProductList products() {
         return productList;
     }
