@@ -1,6 +1,7 @@
 package components;
 
 import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Allure;
@@ -56,8 +57,11 @@ public class CartTable {
     public CartTable changeQuantity(String title, int quantity) {
         SelenideElement input = row(title).$(QUANTITY).shouldBe(visible);
         input.click();
-        input.sendKeys(Keys.chord(Keys.CONTROL, "a"), String.valueOf(quantity));
+        input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        input.sendKeys(Keys.BACK_SPACE);
+        input.sendKeys(String.valueOf(quantity));
         input.pressTab();
+        input.shouldHave(Condition.value(String.valueOf(quantity)));
         return this;
     }
 
