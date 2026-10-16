@@ -23,11 +23,6 @@ public class ProductList {
         return products.size();
     }
 
-    /* @Step("Получаем название всех товаров")
-    public List<String> titles() {
-        return titles.texts();
-    } */
-
     @Step("Get the first product title")
     public String firstTitle() {
         return titles.first().shouldBe(visible).getText();

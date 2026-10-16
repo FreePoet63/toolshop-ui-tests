@@ -45,6 +45,6 @@ public record TestUser (
     @Override
     public String toString() {
         return "TestUser[firstName=" + firstName + ", lastName=" + lastName
-                + ", email=" + email + ", password=***]";
+                + ", email=" + email + ", password=*****]";
     }
 }

@@ -4,6 +4,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 import pages.CartPage;
+import pages.LoginPage;
 import pages.SearchResultPage;
 
 import static com.codeborne.selenide.Condition.*;
@@ -15,6 +16,8 @@ public class Header {
     private final SelenideElement input = $("#search-query");
     private final SelenideElement submitButton = $x("//button[@class=\"btn btn-secondary\"]");
     private final SelenideElement categoryBtn = $x("//button[@data-test=\"nav-categories\"]");
+    private final SelenideElement userMenu = $("[data-test='nav-menu']");
+    private final SelenideElement signOutLink = $("[data-test='nav-sign-out']");
     private final ElementsCollection categoryMenu = $$x("//ul[@class=\"dropdown-menu show\"]/li");
 
     @Step("Search for product '{query}'")
@@ -41,5 +44,18 @@ public class Header {
     public CartPage openCart() {
         cartLink.shouldBe(visible).click();
         return new CartPage();
+    }
+
+    @Step("Verify the header shows the user '{name}'")
+    public Header shouldShowUser(String name) {
+        userMenu.shouldHave(partialText(name));
+        return this;
+    }
+
+    @Step("Sign Out")
+    public LoginPage logout() {
+        userMenu.shouldBe(visible).click();
+        signOutLink.shouldBe(visible).click();
+        return new LoginPage();
     }
 }
