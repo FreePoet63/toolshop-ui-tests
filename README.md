@@ -1,3 +1,5 @@
+# 🛠️ Toolshop UI Tests
+
 [![UI tests](https://github.com/FreePoet63/toolshop-ui-tests/actions/workflows/toolshop.yml/badge.svg)](https://github.com/FreePoet63/toolshop-ui-tests/actions/workflows/toolshop.yml)
 ![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)
 ![Selenide](https://img.shields.io/badge/Selenide-7.18-green)
@@ -23,7 +25,9 @@ Built with **Java, Selenide, TestNG and Allure**, runs in **GitHub Actions** and
 | **Filters** | single filter, multiple filters, reset, every card matches the filter, filters across different categories (data-driven) |
 | **Product** | open from catalog, price and description, quantity control, add to cart |
 | **Cart** | product in cart, quantity change recalculates totals, remove product, cart total equals sum of lines |
-| **Registration** | _planned_ |
+| **Registration** | successful registration, validation of every required field (data-driven), invalid email, weak password, duplicate email |
+| **Login** | successful login, wrong password, unknown email, empty fields, logout |
+| **Checkout** | _planned_ |
 
 ---
 
@@ -35,8 +39,11 @@ duplicating locators.
 ```
 src
 ├── main/java
-│   ├── pages        # CatalogPage, ProductPage, CartPage, HomePage ...
-│   ├── components   # Header, FilterPanel, ProductList, CartTable, QuantityControl, CartToast
+│   ├── pages        # HomePage, CatalogPage, ProductPage, CartPage, RegisterPage, LoginPage, AccountPage ...
+│   ├── components   # Header, FilterPanel, ProductList, CartTable, QuantityControl, CartToast,
+│   │                # FormField, FormAlert, RegistrationForm, LoginForm
+│   ├── model        # TestUser (test data)
+│   ├── api          # UserApi (test users created through the application API)
 │   ├── config       # TestConfig  (system properties)
 │   ├── driver       # DriverConfig (browser setup)
 │   └── utils        # AllureUtils, Money
@@ -44,7 +51,7 @@ src
     ├── java
     │   ├── base       # BaseTest (setup / teardown, Allure artifacts on failure)
     │   ├── listener   # Retry, RetryTransformer, TestLifecycleListener
-    │   └── test       # search, catalog, product, cart
+    │   └── test       # search, catalog, product, cart, registration, login
     └── resources      # allure.properties, META-INF/services
 ```
 
@@ -65,10 +72,18 @@ catalog.products().shouldAllContain("Screwdriver");
   that is still being re-rendered.
 - **Clear assertion rule.** Element state is checked with Selenide conditions inside page/component
   methods; values that were already read (numbers, strings) are checked with AssertJ, wrapped in an
-  Allure step so the report shows the real data (`96 = 96`).
+  Allure step so the report shows the real data (`$29.43 = $29.43`).
+- **Reusable form components.** `FormField` (an input plus its validation message) and `FormAlert`
+  (a general form error) are shared by the registration and login forms.
+- **Test data through the API.** Users for login tests are created through the application API
+  (RestAssured), so UI tests do not depend on the registration form. Registration itself is covered by
+  dedicated UI tests.
+- **No secrets in the report.** Passwords are masked in Allure steps and hidden in the `toString()`
+  of the test data model.
 - **Controlled retries.** A TestNG `IRetryAnalyzer` (up to 3 attempts per test and per data-provider
   row) is registered once through an `IAnnotationTransformer`, so no annotation is needed in tests.
   Retries are visible in the Allure **Retries** tab and every retried test is analysed, not ignored.
+- **Test levels.** The same transformer puts every UI test into the `ui` TestNG group.
 - **Failure diagnostics.** On failure the report gets a screenshot, page source, browser logs and the
   failure reason.
 - **Readable report.** Allure steps, stories and descriptions are written in English.
@@ -87,6 +102,9 @@ cd toolshop-ui-tests
 # run all tests
 mvn clean test
 
+# run by level
+mvn test -Dgroups=ui
+
 # one class / one method
 mvn test -Dtest=FilterTest
 mvn test "-Dtest=FilterTest#shouldResetFilters"
@@ -103,6 +121,7 @@ mvn allure:serve
 | `headless` | `false` | run without a browser window |
 | `timeout` | `10000` | Selenide wait timeout, ms |
 | `base.url` | `https://practicesoftwaretesting.com` | application under test |
+| `api.url` | `https://api.practicesoftwaretesting.com` | API used to create test users |
 
 ```bash
 mvn clean test -Dbrowser=firefox -Dheadless=true
@@ -128,14 +147,14 @@ GitHub Actions workflow (`.github/workflows/toolshop.yml`):
 - [x] Filters
 - [x] Product page
 - [x] Cart
-- [ ] Registration and login
+- [x] Registration and login
 - [ ] Checkout
 
 ---
 
 ## 🧰 Tech stack
 
-Java 17 · Selenide · TestNG · AssertJ · Allure · Maven · GitHub Actions · GitHub Pages
+Java 17 · Selenide · TestNG · RestAssured · AssertJ · Allure · Maven · GitHub Actions · GitHub Pages
 
 ---
 
@@ -161,13 +180,15 @@ Java 17 · Selenide · TestNG · AssertJ · Allure · Maven · GitHub Actions ·
 | **Фильтры** | один фильтр, несколько фильтров, сброс, все карточки соответствуют фильтру, фильтры в разных категориях (параметризованный тест) |
 | **Продукт** | открытие из каталога, цена и описание, изменение количества, добавление в корзину |
 | **Корзина** | товар в корзине, пересчёт суммы при смене количества, удаление, итог равен сумме позиций |
-| **Регистрация** | _в планах_ |
+| **Регистрация** | успешная регистрация, проверка каждого обязательного поля (параметризованный тест), неверная почта, слабый пароль, занятая почта |
+| **Авторизация** | успешный вход, неверный пароль, незарегистрированная почта, пустые поля, выход |
+| **Оформление заказа** | _в планах_ |
 
 ### Архитектура
 
 Паттерн Page Object с **композицией компонентов**: страница собирается из переиспользуемых
-компонентов (шапка, панель фильтров, список товаров, таблица корзины), а локаторы не дублируются.
-Структура пакетов приведена в английской части выше.
+компонентов (шапка, панель фильтров, список товаров, таблица корзины, поля форм), а локаторы не
+дублируются. Структура пакетов приведена в английской части выше.
 
 ### Принципы
 
@@ -176,10 +197,18 @@ Java 17 · Selenide · TestNG · AssertJ · Allure · Maven · GitHub Actions ·
   который ещё перерисовывается.
 - **Чёткое правило проверок.** Состояние элементов проверяется условиями Selenide внутри методов
   страниц и компонентов; уже считанные значения (числа, строки) проверяются через AssertJ в шаге
-  Allure, поэтому в отчёте видны реальные данные (`96 = 96`).
+  Allure, поэтому в отчёте видны реальные данные (`$29.43 = $29.43`).
+- **Переиспользуемые компоненты форм.** `FormField` (поле ввода и сообщение об ошибке под ним) и
+  `FormAlert` (общая ошибка формы) используются и в регистрации, и во входе.
+- **Тестовые данные через API.** Пользователи для тестов входа создаются через API приложения
+  (RestAssured), поэтому UI-тесты не зависят от формы регистрации. Сама регистрация проверяется
+  отдельными UI-тестами.
+- **Никаких секретов в отчёте.** Пароли маскируются в шагах Allure и скрыты в `toString()` модели
+  тестовых данных.
 - **Контролируемые повторы.** `IRetryAnalyzer` TestNG (до 3 попыток на тест и на набор данных)
   подключается один раз через `IAnnotationTransformer`, в тестах аннотации не нужны. Повторы видны во
   вкладке **Retries** в Allure, и каждый повторённый тест разбирается, а не игнорируется.
+- **Уровни тестов.** Этот же трансформер добавляет каждому UI-тесту группу `ui` в TestNG.
 - **Диагностика падений.** При падении в отчёт попадают скриншот, исходный код страницы, логи
   браузера и причина.
 - **Читаемый отчёт.** Шаги, истории и описания в Allure написаны на английском.
@@ -194,6 +223,7 @@ git clone https://github.com/FreePoet63/toolshop-ui-tests.git
 cd toolshop-ui-tests
 
 mvn clean test                                   # все тесты
+mvn test -Dgroups=ui                             # по уровню
 mvn test -Dtest=FilterTest                       # один класс
 mvn test "-Dtest=FilterTest#shouldResetFilters"  # один метод
 mvn allure:serve                                 # открыть отчёт Allure
@@ -205,6 +235,7 @@ mvn allure:serve                                 # открыть отчёт All
 | `headless` | `false` | запуск без окна браузера |
 | `timeout` | `10000` | таймаут ожиданий Selenide, мс |
 | `base.url` | `https://practicesoftwaretesting.com` | тестируемое приложение |
+| `api.url` | `https://api.practicesoftwaretesting.com` | API для создания тестовых пользователей |
 
 ### CI / CD
 
@@ -222,7 +253,7 @@ Workflow GitHub Actions (`.github/workflows/toolshop.yml`):
 - [x] Фильтры
 - [x] Страница продукта
 - [x] Корзина
-- [ ] Регистрация и вход
+- [x] Регистрация и вход
 - [ ] Оформление заказа
 
 </details>
