@@ -1,20 +1,15 @@
 package pages;
 
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
+import components.FormAlert;
 import components.RegistrationForm;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import model.TestUser;
 
-import static com.codeborne.selenide.Condition.partialText;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
 public class RegisterPage {
-    private final SelenideElement formError = $(".help-block");
-
     private final RegistrationForm form = new RegistrationForm();
+    private final FormAlert formAlert = new FormAlert();
 
     @Step("Open the register page")
     public static RegisterPage open() {
@@ -46,9 +41,7 @@ public class RegisterPage {
     }
 
     public RegisterPage shouldShowFormError(String expected) {
-        Allure.step("Verify the form shows the error '" + expected + "'", () -> {
-            formError.shouldBe(visible).shouldHave(partialText(expected));
-        });
+        formAlert.shouldHaveText(expected);
         return this;
     }
 }
