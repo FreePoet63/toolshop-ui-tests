@@ -58,4 +58,10 @@ public class Header {
         signOutLink.shouldBe(visible).click();
         return new LoginPage();
     }
+
+    @Step("Verify the cart has disappeared from the header")
+    public Header shouldNotShowCart() {
+        cartLink.shouldBe(disappear);
+        return this;
+    }
 }

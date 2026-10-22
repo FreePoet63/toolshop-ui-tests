@@ -17,6 +17,7 @@ import static com.codeborne.selenide.Selenide.$x;
 public class CartPage {
     private final SelenideElement cartTotal = $("[data-test='cart-total']");
     private final SelenideElement emptyMessage = $x("//div[@role=\"alert\"]");
+    private final SelenideElement proceedButton = $("[data-test='proceed-1']");
 
     private final CartTable cartTable = new CartTable();
     private final Header header = new Header();
@@ -44,5 +45,11 @@ public class CartPage {
     public CartPage shouldBeEmpty() {
         emptyMessage.shouldBe(visible);
         return this;
+    }
+
+    @Step("Proceed to checkout")
+    public CheckoutPage proceedToCheckout() {
+        proceedButton.shouldBe(visible).click();
+        return new CheckoutPage();
     }
 }

@@ -24,9 +24,9 @@ public record TestUser (
                 "United States of America (the)",
                 "12345",
                 "4",
-                "Test Street 1",
-                "Springfield",
-                "Illinois",
+                "Carmela Via",
+                "West Brant",
+                "Kentucky",
                 "1234567890",
                 "user" + System.currentTimeMillis() + "@example.com",
                 "SrtOng!PasswOrd#2026");
@@ -38,6 +38,11 @@ public record TestUser (
     }
 
     public TestUser withPassword(String password) {
+        return new TestUser(firstName, lastName, dateOfBirth, country, postalCode, houseNumber, street, city, state,
+                phone, email, password);
+    }
+
+    public TestUser withHouseNumber(String houseNumber) {
         return new TestUser(firstName, lastName, dateOfBirth, country, postalCode, houseNumber, street, city, state,
                 phone, email, password);
     }
