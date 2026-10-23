@@ -1,18 +1,18 @@
 package pages;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
+import components.Table;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import utils.Money;
 
 import java.math.BigDecimal;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Condition.partialText;
+import static com.codeborne.selenide.Condition.visible;
 
 public class InvoicesPage {
-    private final ElementsCollection rows = $$("table tbody tr");
+    private final Table table = new Table();
 
     @Step("Open the order history")
     public static InvoicesPage open() {
@@ -21,13 +21,13 @@ public class InvoicesPage {
 
     @Step("Verify the order history contains the invoice '{number}'")
     public InvoicesPage shouldContainInvoice(String number) {
-        rows.findBy(text(number)).shouldBe(visible);
+        table.row(number).shouldBe(visible);
         return this;
     }
 
     public InvoicesPage shouldHaveTotal(String number, BigDecimal expected) {
         Allure.step("Verify the invoice '" + number + "' has the total " + Money.format(expected), () -> {
-            rows.findBy(text(number)).shouldHave(partialText(Money.plain(expected)));
+            table.row(number).shouldHave(partialText(Money.plain(expected)));
         });
         return this;
     }

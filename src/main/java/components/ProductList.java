@@ -9,13 +9,12 @@ import pages.ProductPage;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.$$;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Selenide.*;
 
 public class ProductList {
     private final ElementsCollection products = $$(".card");
     private final ElementsCollection titles = $$(".card-title");
-    private final SelenideElement errorMessage = $x("//p[@class=\"mb-2\"]");
+    private final SelenideElement errorMessage = $("p.mb-2");
 
     @Step("Count products")
     public int count() {

@@ -72,4 +72,10 @@ public class FormField {
         });
         return this;
     }
+    public FormField select(String text) {
+        Allure.step("Select '" + text + "' in the '" + name + "' field", () -> {
+            input.shouldBe(visible).selectOption(text);
+        });
+        return this;
+    }
 }
