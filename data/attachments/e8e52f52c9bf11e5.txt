@@ -1,0 +1,6 @@
+Element should be clickable: interactable and enabled {#btn-add-to-cart}
+Element: '<button _ngcontent-ng-c2605822289 class="btn-success btn" data-test="add-to-cart" disabled id="btn-add-to-cart" type="submit">Add to cart</button>'
+Actual value: disabled
+Screenshot: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1792853881241.5.png
+Page source: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1792853881241.5.html
+Timeout: 10s
