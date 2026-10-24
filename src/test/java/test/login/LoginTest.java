@@ -2,8 +2,7 @@ package test.login;
 
 import api.UserApi;
 import base.BaseTest;
-import components.LoginForm;
-import components.LoginForm.Field;
+import components.Field;
 import io.qameta.allure.*;
 import model.TestUser;
 import org.testng.annotations.DataProvider;

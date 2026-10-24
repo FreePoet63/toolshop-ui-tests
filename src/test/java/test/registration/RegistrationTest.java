@@ -1,7 +1,7 @@
 package test.registration;
 
 import base.BaseTest;
-import components.RegistrationForm.Field;
+import components.Field;
 import io.qameta.allure.*;
 import model.TestUser;
 import org.testng.annotations.DataProvider;

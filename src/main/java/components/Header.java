@@ -14,11 +14,11 @@ public class Header {
     private final SelenideElement cartBadge = $("#lblCartCount");
     private final SelenideElement cartLink = $("[data-test='cart-quantity']");
     private final SelenideElement input = $("#search-query");
-    private final SelenideElement submitButton = $x("//button[@class=\"btn btn-secondary\"]");
-    private final SelenideElement categoryBtn = $x("//button[@data-test=\"nav-categories\"]");
+    private final SelenideElement submitButton = $("[type='submit']");
+    private final SelenideElement categoryBtn = $("[data-test='nav-categories']");
     private final SelenideElement userMenu = $("[data-test='nav-menu']");
     private final SelenideElement signOutLink = $("[data-test='nav-sign-out']");
-    private final ElementsCollection categoryMenu = $$x("//ul[@class=\"dropdown-menu show\"]/li");
+    private final ElementsCollection categoryMenu = $$("ul.dropdown-menu.show > li");
 
     @Step("Search for product '{query}'")
     public SearchResultPage search(String query) {
@@ -57,5 +57,11 @@ public class Header {
         userMenu.shouldBe(visible).click();
         signOutLink.shouldBe(visible).click();
         return new LoginPage();
+    }
+
+    @Step("Verify the cart has disappeared from the header")
+    public Header shouldNotShowCart() {
+        cartLink.shouldBe(disappear);
+        return this;
     }
 }

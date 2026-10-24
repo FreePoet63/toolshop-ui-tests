@@ -2,6 +2,7 @@ package pages;
 
 import com.codeborne.selenide.SelenideElement;
 import components.CartTable;
+import components.CartToast;
 import components.Header;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
@@ -12,17 +13,21 @@ import java.math.BigDecimal;
 import static com.codeborne.selenide.Condition.partialText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
 
 public class CartPage {
     private final SelenideElement cartTotal = $("[data-test='cart-total']");
-    private final SelenideElement emptyMessage = $x("//div[@role=\"alert\"]");
+    private final SelenideElement proceedButton = $("[data-test='proceed-1']");
 
     private final CartTable cartTable = new CartTable();
+    private final CartToast cartToast = new CartToast();
     private final Header header = new Header();
 
     public CartTable table() {
         return cartTable;
+    }
+
+    public CartToast cartToast() {
+        return cartToast;
     }
 
     public Header header() {
@@ -42,7 +47,13 @@ public class CartPage {
 
     @Step("Verify the cart is empty")
     public CartPage shouldBeEmpty() {
-        emptyMessage.shouldBe(visible);
+        cartToast().shouldBeEmpty();
         return this;
+    }
+
+    @Step("Proceed to checkout")
+    public CheckoutPage proceedToCheckout() {
+        proceedButton.shouldBe(visible).click();
+        return new CheckoutPage();
     }
 }

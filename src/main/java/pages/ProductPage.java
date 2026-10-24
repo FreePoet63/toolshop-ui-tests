@@ -8,10 +8,9 @@ import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
 
 public class ProductPage {
-    private final SelenideElement productName = $x("//h1[@data-test=\"product-name\"]");
+    private final SelenideElement productName = $("[data-test='product-name'");
     private final SelenideElement price = $(".price-section");
     private final SelenideElement description = $("#description");
     private final SelenideElement addToCartButton = $("#btn-add-to-cart");

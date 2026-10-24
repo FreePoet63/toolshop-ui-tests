@@ -8,22 +8,6 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 public class LoginForm {
-
-    public enum Field {
-        EMAIL("email"),
-        PASSWORD("password");
-
-        private final String id;
-
-        Field(String id) {
-            this.id = id;
-        }
-
-        public String id() {
-            return id;
-        }
-    }
-
     private final SelenideElement submitButton = $("[data-test='login-submit']");
 
     public FormField field(Field field) {

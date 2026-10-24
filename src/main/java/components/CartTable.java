@@ -2,7 +2,6 @@ package components;
 
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
@@ -11,8 +10,8 @@ import utils.Money;
 
 import java.math.BigDecimal;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Condition.partialText;
+import static com.codeborne.selenide.Condition.visible;
 
 public class CartTable {
     private static final String PRICE = "[data-test='product-price']";
@@ -20,15 +19,15 @@ public class CartTable {
     private static final String LINE_PRICE = "[data-test='line-price']";
     private static final String REMOVE = ".btn-danger";
 
-    private final ElementsCollection rows = $$("table tbody tr");
+    private final Table table = new Table();
 
     private SelenideElement row(String title) {
-        return rows.findBy(text(title));
+        return table.row(title);
     }
 
     @Step("Verify the cart has {expected} items")
     public CartTable shouldHaveRows(int expected) {
-        rows.shouldHave(CollectionCondition.size(expected));
+        table.rows().shouldHave(CollectionCondition.size(expected));
         return this;
     }
 

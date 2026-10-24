@@ -8,7 +8,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 public class FormAlert {
-    private final SelenideElement alert = $(".help-block");
+    private final SelenideElement alert = $(".alert.alert-danger");
 
     public FormAlert shouldHaveText(String expected) {
         Allure.step("Verify the form shows the error '" + expected + "'", () -> {

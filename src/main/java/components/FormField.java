@@ -5,10 +5,8 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Allure;
 import org.openqa.selenium.Keys;
 
-import static com.codeborne.selenide.Condition.partialText;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.executeJavaScript;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
 public class FormField {
     private static final String INPUT = "[data-test='%s']";
@@ -25,7 +23,7 @@ public class FormField {
     }
 
     public FormField type(String value) {
-        String shown = name.contains("password") ? "***" : value;
+        String shown = name.contains("password") ? "*****" : value;
         Allure.step("Enter '" + shown + "' into the '" + name + "' field", () -> {
             input.shouldBe(visible).setValue(value);
         });
@@ -47,6 +45,13 @@ public class FormField {
         return this;
     }
 
+    public FormField shouldHaveValue(String expected) {
+        Allure.step("Verify the '" + name + "' field contains '" + expected + "'", () -> {
+            input.shouldHave(value(expected));
+        });
+        return this;
+    }
+
     public FormField shouldShowError() {
         Allure.step("Verify the '" + name + "' field show a validation error", () -> {
             error.shouldBe(visible);
@@ -64,6 +69,12 @@ public class FormField {
     public FormField shouldHaveNoError() {
         Allure.step("Verify the '" + name + "' field show no error", () -> {
             error.shouldNotBe(visible);
+        });
+        return this;
+    }
+    public FormField select(String text) {
+        Allure.step("Select '" + text + "' in the '" + name + "' field", () -> {
+            input.shouldBe(visible).selectOption(text);
         });
         return this;
     }
