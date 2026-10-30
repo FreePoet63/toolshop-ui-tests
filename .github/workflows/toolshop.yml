@@ -30,8 +30,8 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Set up Firefox
-        uses: browser-actions/setup-firefox@v1
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
 
       # Повторы упавших тестов делает Retry (TestNG), параметр surefire не нужен.
       # Шаг без continue-on-error: если тесты упали, весь запуск красный,
@@ -40,7 +40,7 @@ jobs:
         run: >
           mvn clean test
           -Dheadless=true
-          -Dbrowser=firefox
+          -Dbrowser=chrome
       - name: Load previous Allure report history
         uses: actions/checkout@v4
         if: always()
