@@ -1,0 +1,6 @@
+Element not found {[data-test='email']}
+Expected: visible
+Screenshot: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1793373203260.8.png
+Page source: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1793373203260.8.html
+Timeout: 10s
+Caused by: NoSuchElementException: Unable to locate element: [data-test='email']
