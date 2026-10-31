@@ -1,6 +1,0 @@
-Element should be clickable: interactable and enabled {#btn-increase-quantity}
-Element: '<button _ngcontent-ng-c2605822289 aria-label="Increase quantity" class="btn btn-secondary" data-test="increase-quantity" disabled id="btn-increase-quantity" type="submit"></button>'
-Actual value: disabled
-Screenshot: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1793388800921.5.png
-Page source: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1793388800921.5.html
-Timeout: 10s

@@ -1,0 +1,4 @@
+List size mismatch: expected: < 9, actual: 9, collection: .card
+Screenshot: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1793455820661.3.png
+Page source: file:/home/runner/work/toolshop-ui-tests/toolshop-ui-tests/build/reports/tests/1793455820661.3.html
+Timeout: 10s
