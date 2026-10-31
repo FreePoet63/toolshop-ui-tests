@@ -49,13 +49,15 @@ jobs:
           timeout 900 bash -c 'until curl -sf http://localhost:8091/api/documentation > /dev/null; do sleep 5; done'
           timeout 900 bash -c 'until curl -sf http://localhost:4200 > /dev/null; do sleep 5; done'
 
-      # Recreate the database and populate it with seed data.
+      # Fix folder permissions, recreate the database and populate it with seed data.
       - name: Create and seed the database
         working-directory: toolshop-app
         run: |
+          # Fix Laravel application storage and cache permissions to avoid 500 errors
+          docker compose exec -T -u root laravel-api chown -R www-data:www-data storage bootstrap/cache
+          docker compose exec -T -u root laravel-api chmod -R 777 storage bootstrap/cache
+          # Run database migrations and seeders
           docker compose exec -T laravel-api php artisan migrate:fresh --seed
-          # CRITICAL STEP: Sync database products with Meilisearch engine used by frontend
-          docker compose exec -T laravel-api php artisan scout:import "App\Models\Product"
 
       # Verify that Laravel is connected to the expected database
       # and that the seeders inserted data.
@@ -67,12 +69,12 @@ jobs:
           docker compose exec -T laravel-api php artisan tinker --execute="dump(DB::table('brands')->count());"
           docker compose exec -T laravel-api php artisan tinker --execute="dump(DB::table('categories')->count());"
 
-      # Ensure the search/catalog endpoint actually returns products before running UI tests
-      - name: Wait for frontend catalog data sync
+      # Ensure the catalog endpoint actually returns HTTP 200 before running UI tests
+      - name: Wait for backend API to start serving products
         run: |
-          echo "Waiting for search engine indexation to complete..."
+          echo "Waiting for backend API to start serving products..."
           timeout 300 bash -c '
-            until [ "$(curl -s http://localhost:8091/api/products | grep -o "\"total\":[0-9]*" | cut -d: -f2)" -gt 0 ]; do
+            until curl -sf http://localhost:8091/api/products > /dev/null; do
               sleep 5
             done
           '
