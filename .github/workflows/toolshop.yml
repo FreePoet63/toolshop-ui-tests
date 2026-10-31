@@ -3,14 +3,14 @@ name: Toolshop UI tests
 on:
   push:
     branches:
-      - master            # после слияния: обновляем отчёт Allure на Pages
-  pull_request:         # внутри PR: проверка кода до слияния
-  workflow_dispatch:    # ручной запуск кнопкой
+      - main            # after merge: update the Allure report on Pages
+  pull_request:         # inside a PR: check the code before the merge
+  workflow_dispatch:    # manual start
 
 permissions:
   contents: write
 
-# Запуски одной ветки идут по очереди, чтобы не писать в gh-pages одновременно
+# Runs of one branch go one after another, so they never write to gh-pages at the same time
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
@@ -33,14 +33,45 @@ jobs:
       - name: Set up Firefox
         uses: browser-actions/setup-firefox@v1
 
-      # Повторы упавших тестов делает Retry (TestNG), параметр surefire не нужен.
-      # Шаг без continue-on-error: если тесты упали, весь запуск красный,
-      # а шаги ниже с if: always() всё равно выполнятся и соберут отчёт.
+      # The application under test is started inside the runner, so the tests never
+      # touch the public site (and its bot protection).
+      - name: Checkout the Toolshop application
+        uses: actions/checkout@v4
+        with:
+          repository: testsmith-io/practice-software-testing
+          path: toolshop-app
+
+      - name: Start the Toolshop application
+        working-directory: toolshop-app
+        # The first start can take several minutes. The project README also describes
+        # docker-compose.prod.yml with pre-built images, which can be faster.
+        run: docker compose up -d
+
+      - name: Wait for the application
+        run: |
+          timeout 900 bash -c 'until curl -sf http://localhost:8091/api/documentation > /dev/null; do sleep 5; done'
+          timeout 900 bash -c 'until curl -sf http://localhost:4200 > /dev/null; do sleep 5; done'
+
+      - name: Create and seed the database
+        working-directory: toolshop-app
+        run: docker compose exec -T laravel-api php artisan migrate:fresh --seed
+
+      # Repeats of failed tests are done by Retry (TestNG), surefire reruns are not needed.
+      # No continue-on-error: if tests fail the whole run is red, while the steps below
+      # with "if: always()" still build the report.
       - name: Run tests
         run: >
           mvn clean test
           -Dheadless=true
           -Dbrowser=firefox
+          -Dbase.url=http://localhost:4200
+          -Dapi.url=http://localhost:8091
+
+      - name: Show the application logs
+        if: failure()
+        working-directory: toolshop-app
+        run: docker compose logs --tail=100
+
       - name: Load previous Allure report history
         uses: actions/checkout@v4
         if: always()
@@ -54,6 +85,7 @@ jobs:
         run: |
           mkdir -p target/allure-results/history
           cp -r gh-pages/history/* target/allure-results/history/ 2>/dev/null || true
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         if: always()
@@ -68,12 +100,11 @@ jobs:
         if: always()
         run: allure generate target/allure-results --clean -o allure-report
 
-      # Публикуем отчёт только из main, чтобы черновая ветка не перезаписала рабочий отчёт
+      # The report is published only from main, so a draft branch never overwrites the stable one
       - name: Deploy to GitHub Pages
-        if: always() && github.ref == 'refs/heads/master'
+        if: always() && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-report
-          
