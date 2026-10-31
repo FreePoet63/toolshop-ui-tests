@@ -80,8 +80,8 @@ jobs:
         run: |
           echo "Waiting for backend API to start serving products..."
           timeout 180 bash -c '
-            until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8091/api/v1/products)" -eq 200 ]; do
-              echo "Current API status: $(curl -s -o /dev/null -w "%{http_code}" http://localhost:8091/api/v1/products). Waiting..."
+            until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8091/api/products)" -eq 200 ]; do
+              echo "Current API status: $(curl -s -o /dev/null -w "%{http_code}" http://localhost:8091/api/products). Waiting..."
               sleep 5
             done
             echo "API is ready with HTTP 200!"
