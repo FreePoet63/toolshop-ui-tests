@@ -43,7 +43,8 @@ jobs:
         working-directory: toolshop-app
         run: docker compose up -d
 
-      - name: Wait for the application
+      # Wait for containers web servers to boot up
+      - name: Wait for the application basic boot
         run: |
           timeout 900 bash -c 'until curl -sf http://localhost:8091/api/documentation > /dev/null; do sleep 5; done'
           timeout 900 bash -c 'until curl -sf http://localhost:4200 > /dev/null; do sleep 5; done'
@@ -51,7 +52,10 @@ jobs:
       # Recreate the database and populate it with seed data.
       - name: Create and seed the database
         working-directory: toolshop-app
-        run: docker compose exec -T laravel-api php artisan migrate:fresh --seed
+        run: |
+          docker compose exec -T laravel-api php artisan migrate:fresh --seed
+          # CRITICAL STEP: Sync database products with Meilisearch engine used by frontend
+          docker compose exec -T laravel-api php artisan scout:import "App\Models\Product"
 
       # Verify that Laravel is connected to the expected database
       # and that the seeders inserted data.
@@ -62,6 +66,16 @@ jobs:
           docker compose exec -T laravel-api php artisan tinker --execute="dump(DB::table('products')->count());"
           docker compose exec -T laravel-api php artisan tinker --execute="dump(DB::table('brands')->count());"
           docker compose exec -T laravel-api php artisan tinker --execute="dump(DB::table('categories')->count());"
+
+      # Ensure the search/catalog endpoint actually returns products before running UI tests
+      - name: Wait for frontend catalog data sync
+        run: |
+          echo "Waiting for search engine indexation to complete..."
+          timeout 300 bash -c '
+            until [ "$(curl -s http://localhost:8091/api/products | grep -o "\"total\":[0-9]*" | cut -d: -f2)" -gt 0 ]; do
+              sleep 5
+            done
+          '
 
       # TestNG Retry handles failed test retries.
       - name: Run tests
