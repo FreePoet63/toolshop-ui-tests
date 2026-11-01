@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout tests
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -32,42 +32,32 @@ jobs:
       - name: Set up Firefox
         uses: browser-actions/setup-firefox@v1
 
-      # Start the application locally in the GitHub Actions runner.
-      - name: Checkout the Toolshop application
+      - name: Checkout Toolshop application
         uses: actions/checkout@v4
         with:
           repository: testsmith-io/practice-software-testing
           path: toolshop-app
 
-      - name: Start the Toolshop application
+      - name: Start Toolshop application
         working-directory: toolshop-app
         run: docker compose up -d
 
-      # Wait for containers web servers to boot up
-      - name: Wait for the application basic boot
+      - name: Wait for application startup
         run: |
-          timeout 900 bash -c 'until curl -sf http://localhost:8091/api/documentation > /dev/null; do sleep 5; done'
-          timeout 900 bash -c 'until curl -sf http://localhost:4200 > /dev/null; do sleep 5; done'
+          timeout 900 bash -c 'until curl -sf http://localhost:8091/api/documentation >/dev/null; do sleep 5; done'
+          timeout 900 bash -c 'until curl -sf http://localhost:4200 >/dev/null; do sleep 5; done'
 
-      # Fix folder permissions, clear app cache, recreate the database and populate it with seed data.
-      - name: Create and seed the database
+      - name: Prepare database
         working-directory: toolshop-app
         run: |
-          # Fix Laravel application storage and cache permissions to avoid 500 errors
           docker compose exec -T -u root laravel-api chown -R www-data:www-data storage bootstrap/cache
           docker compose exec -T -u root laravel-api chmod -R 777 storage bootstrap/cache
 
-          # Clear Laravel internal configuration, route and application cache
-          docker compose exec -T laravel-api php artisan config:clear
-          docker compose exec -T laravel-api php artisan route:clear
-          docker compose exec -T laravel-api php artisan cache:clear
+          docker compose exec -T laravel-api php artisan optimize:clear
 
-          # Run database migrations and seeders
           docker compose exec -T laravel-api php artisan migrate:fresh --seed
 
-      # Verify that Laravel is connected to the expected database
-      # and that the seeders inserted data.
-      - name: Verify seeded data
+      - name: Verify database content
         working-directory: toolshop-app
         run: |
           docker compose exec -T laravel-api php artisan tinker --execute="dump(DB::connection()->getDatabaseName());"
@@ -75,74 +65,38 @@ jobs:
           docker compose exec -T laravel-api php artisan tinker --execute="dump(DB::table('brands')->count());"
           docker compose exec -T laravel-api php artisan tinker --execute="dump(DB::table('categories')->count());"
 
-      # Ensure the catalog endpoint actually returns HTTP 200 before running UI tests
-      - name: Wait for backend API to start serving products
+      - name: Print Laravel routes
+        working-directory: toolshop-app
         run: |
-          echo "Waiting for backend API to start serving products..."
-          timeout 180 bash -c '
-            until [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8091/api/products)" -eq 200 ]; do
-              echo "Current API status: $(curl -s -o /dev/null -w "%{http_code}" http://localhost:8091/api/products). Waiting..."
-              sleep 5
-            done
-            echo "API is ready with HTTP 200!"
-          '
+          echo "=== ROUTE LIST ==="
+          docker compose exec -T laravel-api php artisan route:list
 
-      # TestNG Retry handles failed test retries.
-      - name: Run tests
+      - name: Check API endpoints
+        run: |
+          echo "=== Swagger ==="
+          curl -i http://localhost:8091/api/documentation || true
+
+          echo ""
+          echo "=== Products ==="
+          curl -i http://localhost:8091/api/products || true
+
+      - name: Run UI tests
         run: >
-          mvn clean test \
-            -Dheadless=true \
-            -Dbrowser=firefox \
-            -Dbase.url=http://localhost:4200 \
-            -Dapi.url=http://localhost:8091
+          mvn clean test
+          -Dheadless=true
+          -Dbrowser=firefox
+          -Dbase.url=http://localhost:4200
+          -Dapi.url=http://localhost:8091
 
-      # Show Laravel's application exception log if a step fails.
-      - name: Show Laravel application errors
+      - name: Show Laravel errors
         if: failure()
         working-directory: toolshop-app
         run: |
           docker compose exec -T laravel-api sh -lc \
-            'if [ -f storage/logs/laravel.log ]; then tail -n 200 storage/logs/laravel.log; else echo "storage/logs/laravel.log not found"; fi' || true
+          'if [ -f storage/logs/laravel.log ]; then tail -n 300 storage/logs/laravel.log; else echo "laravel.log not found"; fi' || true
 
-      # Show Docker container logs if a step fails.
-      - name: Show the application logs
+      - name: Show Docker logs
         if: failure()
         working-directory: toolshop-app
-        run: docker compose logs --no-color --tail=300 || true
-
-      - name: Load previous Allure report history
-        uses: actions/checkout@v4
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Copy history into results
-        if: always()
         run: |
-          mkdir -p target/allure-results/history
-          cp -r gh-pages/history/* target/allure-results/history/ 2>/dev/null || true
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        if: always()
-        with:
-          node-version: '20'
-
-      - name: Install Allure CLI
-        if: always()
-        run: npm install -g allure-commandline
-
-      - name: Generate Allure report
-        if: always()
-        run: allure generate target/allure-results --clean -o allure-report
-
-      # Publish the report only from main.
-      - name: Deploy to GitHub Pages
-        if: always() && github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-report
+          docker compose logs --no-color --tail=500 || true
