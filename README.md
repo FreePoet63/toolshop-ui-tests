@@ -101,6 +101,9 @@ new Header().openCart()
 - **Failure diagnostics.** On failure the report gets a screenshot, page source, browser logs and the
   failure reason.
 - **Readable report.** Allure steps, stories and descriptions are written in English.
+- **Stable environment.** In CI the application under test is started in Docker inside the runner, so
+  runs do not depend on the public site, its availability or its bot protection, and every run starts
+  from a freshly seeded database.
 - **Configurable from the command line**, no code changes needed.
 
 ---
@@ -139,6 +142,18 @@ mvn test "-Dtest=FilterTest#shouldResetFilters"
 mvn allure:serve
 ```
 
+### Running against a local copy of the application
+
+```bash
+git clone https://github.com/testsmith-io/practice-software-testing
+cd practice-software-testing
+docker compose up -d
+docker compose exec -T laravel-api php artisan migrate:fresh --seed
+
+# back in this project
+mvn clean test -Dbase.url=http://localhost:4200 -Dapi.url=http://localhost:8091
+```
+
 ### Parameters
 
 | Property | Default | Description |
@@ -160,6 +175,9 @@ mvn clean test -Dbrowser=firefox -Dheadless=true
 GitHub Actions workflow (`.github/workflows/toolshop.yml`):
 
 - runs on **pull requests** and on pushes to **`main`**; can also be started manually;
+- **starts the application under test inside the runner** (the open source Toolshop, Docker Compose),
+  seeds its database and runs the tests against `localhost`, so a run depends neither on the public
+  site nor on its bot protection and always starts from fresh data;
 - runs tests headless in Firefox;
 - builds an **Allure report with history** and publishes it to **GitHub Pages**
   (only from `main`, so a draft branch never overwrites the stable report);
@@ -180,9 +198,17 @@ GitHub Actions workflow (`.github/workflows/toolshop.yml`):
 
 ---
 
+## 🙏 Credits
+
+The application under test is [Toolshop (practice-software-testing)](https://github.com/testsmith-io/practice-software-testing)
+by Testsmith, an open source project for practicing software testing. It is not part of this repository:
+the CI workflow downloads it and starts it for the test run. See its license for the terms of use.
+
+---
+
 ## 🧰 Tech stack
 
-Java 17 · Selenide · TestNG · RestAssured · AssertJ · Allure · Maven · GitHub Actions · GitHub Pages
+Java 17 · Selenide · TestNG · RestAssured · AssertJ · Allure · Maven · Docker · GitHub Actions · GitHub Pages
 
 ---
 
@@ -243,6 +269,9 @@ Java 17 · Selenide · TestNG · RestAssured · AssertJ · Allure · Maven · Gi
 - **Диагностика падений.** При падении в отчёт попадают скриншот, исходный код страницы, логи
   браузера и причина.
 - **Читаемый отчёт.** Шаги, истории и описания в Allure написаны на английском.
+- **Стабильное окружение.** В CI тестируемое приложение поднимается в Docker внутри раннера, поэтому
+  запуски не зависят от публичного сайта, его доступности и защиты от ботов, а каждый прогон
+  начинается со свежей базы.
 - **Настройка из командной строки**, без правок кода.
 
 ### Особенности тестируемого приложения
@@ -270,6 +299,18 @@ mvn test "-Dtest=FilterTest#shouldResetFilters"  # один метод
 mvn allure:serve                                 # открыть отчёт Allure
 ```
 
+Запуск на локальной копии приложения:
+
+```bash
+git clone https://github.com/testsmith-io/practice-software-testing
+cd practice-software-testing
+docker compose up -d
+docker compose exec -T laravel-api php artisan migrate:fresh --seed
+
+# затем в этом проекте
+mvn clean test -Dbase.url=http://localhost:4200 -Dapi.url=http://localhost:8091
+```
+
 | Параметр | По умолчанию | Описание |
 |----------|--------------|----------|
 | `browser` | `chrome` | `chrome` или `firefox` |
@@ -283,10 +324,19 @@ mvn allure:serve                                 # открыть отчёт All
 Workflow GitHub Actions (`.github/workflows/toolshop.yml`):
 
 - запускается на **pull request** и при пуше в **`main`**, а также вручную;
+- **поднимает тестируемое приложение прямо в раннере** (открытый Toolshop, Docker Compose), заполняет
+  его базу и гоняет тесты на `localhost`: запуск не зависит ни от публичного сайта, ни от его защиты
+  от ботов и всегда стартует со свежими данными;
 - тесты идут в режиме headless в Firefox;
 - строится **отчёт Allure с историей** и публикуется на **GitHub Pages** (только из `main`, чтобы
   черновая ветка не перезаписала стабильный отчёт);
 - если тесты упали, **задача красная**, а отчёт всё равно публикуется.
+
+### Благодарности
+
+Тестируемое приложение: [Toolshop (practice-software-testing)](https://github.com/testsmith-io/practice-software-testing)
+от Testsmith, открытый проект для практики тестирования. В этот репозиторий оно не входит: workflow
+скачивает и запускает его на время прогона. Условия использования смотри в его лицензии.
 
 ### План
 
