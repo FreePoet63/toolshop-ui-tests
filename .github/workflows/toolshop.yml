@@ -3,7 +3,7 @@ name: Toolshop UI tests
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
   workflow_dispatch:
 
@@ -135,7 +135,7 @@ jobs:
 
       # The report is published only from main, so a draft branch never overwrites the stable one
       - name: Deploy report to GitHub Pages
-        if: always() && github.ref == 'refs/heads/main'
+        if: always() && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
